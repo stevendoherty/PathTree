@@ -9,21 +9,27 @@ public class PathTree<E> implements Iterable<E>{
 	private Node root=new Node();
 	private int size=0;
 
-
-
-
 	//default constructor
 	public PathTree() {
 
 	}
 
+	/**
+	 * Puts all the elements of the tree into the array in depth first order.
+	 * 
+	 * @param array
+	 * @return E[]
+	 */
 	public E[] toArray(E[] array) {
 
 		buildArray(root, array, 0);
 
 		return array;
 	}
-
+	
+	
+	//private class that recursively fills an array with the elements of the tree
+	//does a depth first search
 	private int buildArray(Node r, E[] array, int i) {
 		LinkedList<Node> children=r.getChildren();
 
@@ -39,6 +45,13 @@ public class PathTree<E> implements Iterable<E>{
 		return i;
 	}
 
+	
+	/**
+	 * adds the object as a child of the root node, returns false if the child already exists
+	 * 
+	 * @param e
+	 * @return boolean
+	 */
 	public boolean add(Object e) {
 		if (root.contains(e)) {
 			return false;
@@ -49,57 +62,70 @@ public class PathTree<E> implements Iterable<E>{
 		return true;
 	}
 
-	public boolean addAll(Collection data) {
+	/**
+	 * adds the contents of the collection into the tree, returns true if a new path was made
+	 * 
+	 * @param path
+	 * @return boolean
+	 */
+	public boolean add(Collection<E> path) {
 		Node currentRoot=root;
-
-		for(Object n: data) {
+		boolean ret=false;
+		
+		for(Object n: path) {
 			Node child=currentRoot.getChild(n);
 			if(child==null) {
 				Node temp=new Node(n);
 				currentRoot.addChild(temp);
 				size++;
 				currentRoot=currentRoot.getChild(n);
+				ret=true;
 			}else {
 				currentRoot=child;
 			}
 		}
-		return true;
+		return ret;
 	}
 
-	public boolean addAll(Object[] data) {
+	/**
+	 * adds the contents of the array into the tree, returns true if a new path was made
+	 * 
+	 * @param path
+	 * @return boolean
+	 */
+	public boolean add(Object[] path) {
 		Node currentRoot=root;
-
-		for(Object n: data) {
+		boolean ret=false;
+		
+		for(Object n: path) {
 			Node child=currentRoot.getChild(n);
 			if(child==null) {
 				Node temp=new Node(n);
 				currentRoot.addChild(temp);
 				size++;
 				currentRoot=currentRoot.getChild(n);
+				ret=true;
 			}else {
 				currentRoot=child;
 			}
 		}
-		return true;
+		return ret;
 	}
 
-	public boolean addRootChild(Object n) {
-		if(getRootChildren().contains(n)) {
-			return false;
-		}
-		Node temp=new Node(n);
-		root.addChild(temp);
-		size++;
-		return true;
-
-	}
+	
 
 
 
-	public int contains(Object[] data) {
+	/**
+	 * checks if the path is in the tree, returns 1+the maximum index in the array if it is found, returns the index of first spot that doesn't exist in the path
+	 * 
+	 * @param path
+	 * @return integer
+	 */
+	public int contains(Object[] path) {
 		Node currentRoot=root;
 		int i=0;
-		for(Object n: data) {
+		for(Object n: path) {
 			Node child=currentRoot.getChild(n);
 			if(child==null) {
 				return i;
@@ -110,10 +136,18 @@ public class PathTree<E> implements Iterable<E>{
 		}
 		return i;
 	}
-	public int contains(Collection data) {
+	
+	
+	/**
+	 * checks if the path is in the tree, returns 1+the maximum index in the collection if it is found, returns the index of first spot that doesn't exist in the path
+	 * 
+	 * @param path
+	 * @return integer
+	 */
+	public int containsdata(Collection<E> path) {
 		Node currentRoot=root;
 		int i=0;
-		for(Object n: data) {
+		for(Object n: path) {
 			Node child=currentRoot.getChild(n);
 			if(child==null) {
 				return i;
@@ -128,37 +162,62 @@ public class PathTree<E> implements Iterable<E>{
 
 
 
-	public LinkedList<E> getChildren(Collection data) {
+	/**
+	 * Returns an array of the children for the path given, if the path does not exist it will return null
+	 * 
+	 * @param path
+	 * @return Object[]
+	 */
+	public Object[] getChildren(Collection<E> path) {
 		Node currentRoot=root;
 
-		for(Object n: data) {
+		for(Object n: path) {
 			Node child=currentRoot.getChild(n);
 			if(child==null) {
-				return new LinkedList<E>();
+				return null;
 			}else {
 				currentRoot=child;
 			}
 		}
-		return currentRoot.getChildrenData();
+		return currentRoot.getChildrenData().toArray();
 	}
-	public LinkedList<E> getChildren(Object[] data) {
+	
+	
+	/**
+	 * Returns an array of the children for the path given, if the path does not exist it will return null
+	 * 
+	 * @param path
+	 * @return Object[]
+	 */
+	public Object[] getChildren(Object[] path) {
 		Node currentRoot=root;
 
-		for(Object n: data) {
+		for(Object n: path) {
 			Node child=currentRoot.getChild(n);
 			if(child==null) {
-				return new LinkedList<E>();
+				return null;
 			}else {
 				currentRoot=child;
 			}
 		}
-		return currentRoot.getChildrenData();
+		return currentRoot.getChildrenData().toArray();
 	}
 
-	public LinkedList<E> getRootChildren() {
-		return root.getChildrenData();
+	
+	
+	/**
+	 * returns an array of the children of the root
+	 * 
+	 * @return
+	 */
+	public Object[] getRootChildren() {
+		return root.getChildrenData().toArray();
 	}
 
+	/**
+	 * Clears the data structure
+	 * 
+	 */
 	public void clear() {
 
 		clear(root);
@@ -168,6 +227,7 @@ public class PathTree<E> implements Iterable<E>{
 
 	}
 
+	//private function that clears the structure
 	private void clear(Node root) {
 
 		LinkedList<Node> children=root.getChildren();
@@ -184,14 +244,29 @@ public class PathTree<E> implements Iterable<E>{
 
 	}
 
+	/**
+	 * returns true if the tree is empty, else returns false
+	 * 
+	 * @return boolean
+	 */
 	public boolean isEmpty() {
 		return size==0;
 	}
 
+	/**
+	 * returns an iterator for the tree, it iterates in depth first order
+	 *
+	 * @return Iterator
+	 */
 	public Iterator iterator() {
 		return new Itr();
 	}
 
+	/**
+	 * returns the size of the structure
+	 * 
+	 * @return integer
+	 */
 	public int size() {
 		return size;
 	}
@@ -273,53 +348,7 @@ public class PathTree<E> implements Iterable<E>{
 			return ret;
 		}
 
-
-
-
 	}
-
-	public static void main(String args[]) {
-		PathTree<String> tree=new PathTree();
-		LinkedList<String> list=new LinkedList();
-		list.add("first");
-		list.add("second");
-		list.add("third");
-		tree.addAll(list);
-		tree.addRootChild("root2");
-		tree.addRootChild("root3");
-		String root=null;
-		list=new LinkedList();
-		String[] s= {"second", "first", "nest"};
-		list.add("second");
-		list.add("first");
-		list.add("nest");
-		tree.addAll(s);
-		String[] s1= {"first", "one", "nest"};
-		tree.addAll(s1);
-		String[] s2= {"first", "one", "hello"};
-		tree.addAll(s2);
-
-
-		String[] l=new String[tree.size()];
-		l=tree.toArray(l);
-
-
-		System.out.println("__________");
-		for(String n: tree) {
-			System.out.println(n);
-		}
-		
-		tree.clear();
-		System.out.println("__________");
-		for(String n: tree) {
-			System.out.println(n);
-		}
-		
-
-	}
-
-
-
 
 
 
